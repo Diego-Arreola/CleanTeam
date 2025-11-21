@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import JoinGamePage from './pages/JoinGamePage';
+import WelcomePage from './pages/WelcomePage';
+import ProtectedRoute from './components/ProtectedRoute';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Import your layout components
@@ -20,7 +22,12 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/join" element={<JoinGamePage />} />
+
+      {/* Protected Routes - Only accessible to logged-in users */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/joingame" element={<JoinGamePage />} />
+      </Route>
 
       {/* In-game routes, all nested under a GameLayout to manage the session */}
       <Route path="/game/:roomCode" element={<GameLayout />}>
