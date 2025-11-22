@@ -12,6 +12,17 @@ Diego Arreola Hernandez
 
 Juan Carlos Ceballos Medina
 
+## Ejecución
+
+Back:
+En ./mandarinplayer-api/mandarinplayer
+-Ejecutar mvn clean package
+-Ejecutar docker compose up --build -d
+
+Front:
+En mandarinplayer-client
+-Ejecutar npm install
+-Ejecutar npm run dev
 
 
 ## Problema
