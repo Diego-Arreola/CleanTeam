@@ -36,4 +36,4 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276 -Dsonar.projectKey=Diego-Arreola_CleanTeam_aad8b470-b1c6-4f47-8397-7ad49885fd87 -Dsonar.projectName='CleanTeam'
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar -Dsonar.projectKey=Diego-Arreola_CleanTeam_aad8b470-b1c6-4f47-8397-7ad49885fd87 -Dsonar.projectName='CleanTeam'
