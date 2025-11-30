@@ -16,11 +16,9 @@ jobs:
         image: sonarqube:9.9-community
         ports:
           - 9000:9000
-        options: >-
-          --health-cmd='curl -f http://localhost:9000/api/server/health || exit 1'
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=30
+        # Removed `options` health-cmd here because quoting in the service options
+        # can cause `docker create` to fail on the hosted runner (exit code 125).
+        # We'll perform an explicit polling step below to wait for SonarQube to be ready.
 
     steps:
       - uses: actions/checkout@v4
