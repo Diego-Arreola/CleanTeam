@@ -10,7 +10,18 @@ jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-    
+
+    services:
+      sonarqube:
+        image: sonarqube:9.9-community
+        ports:
+          - 9000:9000
+        options: >-
+          --health-cmd='curl -f http://localhost:9000/api/server/health || exit 1'
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=30
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,14 +43,36 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Check SONAR secrets presence
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          mvn -B verify \
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_HOST_URL" ]; then
+            echo "One or more SONAR secrets are missing"
+            exit 1
+          else
+            echo "SONAR secrets are present"
+          fi
+      - name: Wait for SonarQube
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:9000/api/server/health | grep -q '"status":"UP"'; then
+              echo "SonarQube listo"
+              break
+            fi
+            sleep 5
+          done
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: 'http://localhost:9000'
+        run: |
+          # Put -D properties before the build/goals so the Sonar Scanner sees them reliably
+          mvn -B \
+            -Dsonar.host.url="$SONAR_HOST_URL" \
+            -Dsonar.login="$SONAR_TOKEN" \
+            verify \
             org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar \
             -Dsonar.projectKey=Diego-Arreola_CleanTeam_aad8b470-b1c6-4f47-8397-7ad49885fd87 \
-            -Dsonar.projectName='CleanTeam' \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.projectName='CleanTeam'
