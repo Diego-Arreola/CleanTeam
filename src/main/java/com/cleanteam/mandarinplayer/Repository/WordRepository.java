@@ -8,7 +8,6 @@ import java.util.List;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
 
-    // MAGIA DE SPRING DATA:
     // Solo con escribir "findByThemeId", Spring sabe que debe hacer:
     // SELECT * FROM words WHERE theme_id = ?
     List<Word> findByThemeId(Long themeId);

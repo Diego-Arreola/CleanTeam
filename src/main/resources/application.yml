@@ -1,0 +1,5 @@
+# yaml
+app:
+  jwt:
+    secret-base64: ${APP_JWT_SECRET_BASE64:TCnDIH0V8JgBWR3SVzPM+RQ6cNRF92/w1EjWb/nyyDE=}
+    expiration-minutes: 60

@@ -30,6 +30,10 @@ public class ThemeService {
         return mapToDTO(savedTheme);
     }
 
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
+    }
+
     public ThemeDTO getThemeById(Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tema no encontrado"));
