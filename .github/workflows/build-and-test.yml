@@ -29,7 +29,7 @@ jobs:
           cache: maven
 
       - name: Build and Run Tests with Maven
-        run: mvn clean verify -DskipITs
+        run: mvn clean verify -DskipITs -Dspring.profiles.active=test
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

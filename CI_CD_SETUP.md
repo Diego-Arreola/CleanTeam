@@ -5,6 +5,7 @@
 1. **`.github/workflows/build-and-test.yml`** - Workflow de GitHub Actions
 2. **`sonar-project.properties`** - Configuración de SonarQube
 3. **`pom.xml`** - Actualizado con plugins JaCoCo y SonarQube
+4. **`src/test/resources/application-test.properties`** - Configuración de tests con H2 en memoria
 
 ## ⚙️ Configuración Requerida
 
@@ -39,9 +40,19 @@ El workflow se ejecutará automáticamente en los siguientes casos:
 
 1. ✅ Checkout del código (con historial completo para mejor análisis)
 2. ✅ Setup de Java 17 y Maven
-3. ✅ Build del proyecto y ejecución de tests con JUnit
+3. ✅ Build del proyecto y ejecución de tests con JUnit (usando perfil `test` con H2)
 4. ✅ Generación de reporte de cobertura con JaCoCo
 5. ✅ Análisis con SonarCloud
+
+## 📊 Configuración de Base de Datos para Tests
+
+Los tests usan **H2 Database** (en memoria) automáticamente:
+- Archivo de configuración: `src/test/resources/application-test.properties`
+- Base de datos: **SQLite en memoria** (no requiere instalación)
+- Se crea y destruye automáticamente para cada ejecución de tests
+- No hay dependencias externas en GitHub Actions
+
+**Perfil activado en tests:** `test`
 
 ## 📊 Resultados
 
