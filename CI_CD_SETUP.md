@@ -29,6 +29,17 @@
 4. Asegúrate que el **project key** sea: `Diego-Arreola_CleanTeam`
 5. La **organización** debe ser: `diego-arreola`
 
+### 3. **IMPORTANTE: Deshabilitar Automatic Analysis en SonarCloud**
+
+⚠️ **Este paso es crítico** para evitar conflictos:
+
+1. Ve a tu proyecto en SonarCloud: `Diego-Arreola_CleanTeam`
+2. Click en **Administration → Analysis method**
+3. En la sección **Automatic Analysis**: **Desactívalo**
+4. Confirma que ahora muestra **"Automatic Analysis is off"**
+
+Esto permite que GitHub Actions sea el único responsable del análisis.
+
 ## 🔄 Flujo de CI/CD
 
 El workflow se ejecutará automáticamente en los siguientes casos:
