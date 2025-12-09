@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
 import com.cleanteam.mandarinplayer.DTO.LobbyEvent;
 import com.cleanteam.mandarinplayer.DTO.StartMatchRequest;
 import com.cleanteam.mandarinplayer.Game.Game;
@@ -218,5 +219,41 @@ class MatchStateManagerTest {
 
         LobbyEvent event = eventCaptor.getValue();
         assertEquals(MatchStatus.IN_PROGRESS.name(), event.getStatus());
+    }
+
+    @Test
+    @DisplayName("Debe lanzar excepción si flip request es null")
+    void testFlipWithNullRequest() {
+        assertThrows(IllegalArgumentException.class, 
+            () -> matchStateManager.flip(null, null));
+    }
+
+    @Test
+    @DisplayName("Debe lanzar excepción si roomCode es null")
+    void testFlipWithNullRoomCode() {
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode(null);
+
+        assertThrows(IllegalArgumentException.class,
+            () -> matchStateManager.flip(request, null));
+    }
+
+    @Test
+    @DisplayName("Debe lanzar excepción si sessionId es null")
+    void testFlipWithoutSessionId() {
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("TEST01");
+
+        assertThrows(IllegalArgumentException.class,
+            () -> matchStateManager.flip(request, null));
+    }
+
+    @Test
+    @DisplayName("Debe eliminar juego al terminar match")
+    void testEndMatch() {
+        matchStateManager.endMatch("TEST01");
+        
+        // El método solo remueve del mapa, no lanza excepción
+        assertDoesNotThrow(() -> matchStateManager.endMatch("TEST01"));
     }
 }

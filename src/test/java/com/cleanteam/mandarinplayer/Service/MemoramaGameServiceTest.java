@@ -433,4 +433,60 @@ class MemoramaGameServiceTest {
         // Verificar que se envió el mensaje actualizado (2 calls: initialize + flipCard)
         verify(messagingTemplate, times(2)).convertAndSend(anyString(), any(MemoramaGameState.class));
     }
+
+    @Test
+    @DisplayName("Debe obtener estado del juego por roomCode")
+    void testGetState() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+
+        memoramaGameService.initializeGameAndStore(testMatch);
+
+        MemoramaGameState state = memoramaGameService.getState("TEST01");
+
+        assertNotNull(state);
+        assertEquals("TEST01", state.getRoomCode());
+    }
+
+    @Test
+    @DisplayName("Debe retornar null si estado no existe")
+    void testGetStateNotFound() {
+        MemoramaGameState state = memoramaGameService.getState("NONEXISTENT");
+
+        assertNull(state);
+    }
+
+    @Test
+    @DisplayName("Debe manejar múltiples inicializaciones del mismo room")
+    void testMultipleInitializationsOfSameRoom() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+
+        MemoramaGameState state1 = memoramaGameService.initializeGameAndStore(testMatch);
+        MemoramaGameState state2 = memoramaGameService.initializeGameAndStore(testMatch);
+
+        assertNotNull(state1);
+        assertNotNull(state2);
+        verify(messagingTemplate, atLeast(2)).convertAndSend(anyString(), any(MemoramaGameState.class));
+    }
+
+    @Test
+    @DisplayName("Debe crear cartas con índice correcto")
+    void testCardIndexing() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+
+        memoramaGameService.initializeGameAndStore(testMatch);
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+
+        MemoramaGameState gameState = stateCaptor.getValue();
+        List<MemoramaCard> cards = gameState.getCards();
+
+        // Verificar que cada carta tiene un índice válido
+        for (int i = 0; i < cards.size(); i++) {
+            MemoramaCard card = cards.get(i);
+            assertNotNull(card);
+            assertNotNull(card.getContent());
+            assertEquals(i, card.getPosition());
+        }
+    }
 }
