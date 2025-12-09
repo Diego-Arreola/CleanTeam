@@ -1,17 +1,20 @@
-package com.cleanteam.mandarinplayer.Service;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+package com.cleanteam.mandarinplayer.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cleanteam.mandarinplayer.dto.CreateMatchRequest;
@@ -20,7 +23,6 @@ import com.cleanteam.mandarinplayer.model.Match;
 import com.cleanteam.mandarinplayer.model.MatchStatus;
 import com.cleanteam.mandarinplayer.model.Theme;
 import com.cleanteam.mandarinplayer.repository.ThemeRepository;
-import com.cleanteam.mandarinplayer.service.MatchConfigurer;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MatchConfigurer")
