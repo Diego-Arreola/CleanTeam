@@ -1,13 +1,13 @@
 version: '3.9'
 
 services:
+  # Backend - Java/Spring Boot
   java_app:
     container_name: mandarinplayer
     # Opción 1: Usar imagen local construida con 'docker build'
-    image: mandarinplayer:latest
-    # Opción 2: Usar imagen de Docker Hub (descomenta y comenta la de arriba)
-    # image: diegoarerola/mandarinplayer:latest
-    # Opción 3: Construir localmente cada vez
+    image: diego-arreola/mandarinplayer:latest
+    # Opción 2: Usar imagen precompilada de Docker Hub
+    # image: diego-arreola/mandarinplayer:latest
     build: .
     ports:
       - "8080:8080"
@@ -17,9 +17,13 @@ services:
       - DATABASE_PASSWORD=postgres
       - SPRING_PROFILES_ACTIVE=prod
     depends_on:
-      - java_db
+      java_db:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - mandarinplayer-network
 
+  # Database - PostgreSQL
   java_db:
     container_name: mandarinplayer_db
     image: postgres:15-alpine
@@ -32,7 +36,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mandarinplayer-network
 
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  mandarinplayer-network:
+    driver: bridge
