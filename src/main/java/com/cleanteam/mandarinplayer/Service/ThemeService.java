@@ -49,6 +49,19 @@ public class ThemeService {
         dto.setId(theme.getId());
         dto.setName(theme.getName());
         dto.setDescription(theme.getDescription());
+        if (theme.getWords() != null) {
+            dto.setVocabulary(theme.getWords().stream()
+                    .map(word -> {
+                        com.cleanteam.mandarinplayer.DTO.WordDTO wordDTO = new com.cleanteam.mandarinplayer.DTO.WordDTO();
+                        wordDTO.setId(word.getId());
+                        wordDTO.setCharacter(word.getCharacter());
+                        wordDTO.setPinyin(word.getPinyin());
+                        wordDTO.setTranslation(word.getTranslation());
+                        wordDTO.setThemeId(theme.getId());
+                        return wordDTO;
+                    })
+                    .collect(Collectors.toList()));
+        }
         return dto;
     }
 }

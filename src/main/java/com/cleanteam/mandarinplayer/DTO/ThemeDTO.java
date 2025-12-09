@@ -7,4 +7,5 @@ public class ThemeDTO {
     private Long id;
     private String name;
     private String description;
+    private java.util.List<WordDTO> vocabulary;
 }
