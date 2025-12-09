@@ -6,6 +6,8 @@ import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.cleanteam.mandarinplayer.DTO.WordDTO;
+import com.cleanteam.mandarinplayer.Model.Word;
 
 @Service
 public class ThemeService {
