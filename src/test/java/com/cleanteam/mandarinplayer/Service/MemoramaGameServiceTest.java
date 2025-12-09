@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,40 +138,6 @@ class MemoramaGameServiceTest {
     }
 
     @Test
-    @DisplayName("Debe voltear carta correctamente")
-    void testFlipCard() {
-        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
-
-        // Primero inicializar el juego
-        memoramaGameService.initialize("ROOM01", 1L, List.of("Player1"));
-
-        // Capturar el estado del juego
-        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
-        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
-        
-        // Agregar el estado al mapa interno para que flipCard pueda encontrarlo
-        // Nota: En un test real, usaríamos reflection o un método setter público
-
-        FlipCardRequest request = new FlipCardRequest();
-        request.setRoomCode("ROOM01");
-        request.setCardPosition(0);
-
-        // Este test es limitado sin acceso al mapa interno activeGames
-        // En producción, necesitaríamos exponer métodos adicionales o usar reflection
-    }
-
-    @Test
-    @DisplayName("Debe ignorar flip si posición es inválida")
-    void testFlipCardInvalidPosition() {
-        FlipCardRequest request = new FlipCardRequest();
-        request.setRoomCode("INVALID_ROOM");
-        request.setCardPosition(-1);
-
-        // No debe lanzar excepción
-        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
-    }
-
-    @Test
     @DisplayName("Debe establecer primer jugador actual correctamente")
     void testCurrentPlayerAssignment() {
         when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
@@ -232,5 +199,176 @@ class MemoramaGameServiceTest {
         // Solo verificar que ambas tienen 16 cartas y posiciones válidas
         assertEquals(16, firstOrder.size());
         assertEquals(16, secondOrder.size());
+    }
+
+    @Test
+    @DisplayName("Debe ignorar flip si room no existe")
+    void testFlipCardRoomNotExists() {
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("NONEXISTENT");
+        request.setCardPosition(0);
+
+        // No debe lanzar excepción
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+        
+        // Verificar que no envió mensaje (solo se enviaron los de initialize)
+        verify(messagingTemplate, never()).convertAndSend(anyString(), any(MemoramaGameState.class));
+    }
+
+    @Test
+    @DisplayName("Debe ignorar flip si posición es negativa")
+    void testFlipCardNegativePosition() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+        memoramaGameService.initialize("ROOM07", 1L, List.of("Player1"));
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM07", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM07");
+        request.setCardPosition(-1);
+
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+    }
+
+    @Test
+    @DisplayName("Debe ignorar flip si posición es mayor al tamaño de cartas")
+    void testFlipCardOutOfBoundsPosition() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+        memoramaGameService.initialize("ROOM08", 1L, List.of("Player1"));
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM08", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM08");
+        request.setCardPosition(100);
+
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+    }
+
+    @Test
+    @DisplayName("Debe ignorar flip si carta ya está emparejada")
+    void testFlipCardAlreadyMatched() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+        memoramaGameService.initialize("ROOM09", 1L, List.of("Player1"));
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        // Marcar una carta como emparejada
+        capturedState.getCards().get(0).setMatched(true);
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM09", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM09");
+        request.setCardPosition(0);
+
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+        
+        // Verificar que sigue siendo matched
+        assertTrue(capturedState.getCards().get(0).isMatched());
+    }
+
+    @Test
+    @DisplayName("Debe ignorar flip si carta ya está volteada")
+    void testFlipCardAlreadyFlipped() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+        memoramaGameService.initialize("ROOM10", 1L, List.of("Player1"));
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        // Marcar una carta como volteada
+        capturedState.getCards().get(0).setFlipped(true);
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM10", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM10");
+        request.setCardPosition(0);
+
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+        
+        // Verificar que sigue siendo flipped
+        assertTrue(capturedState.getCards().get(0).isFlipped());
+    }
+
+    @Test
+    @DisplayName("Debe voltear carta correctamente cuando es válida")
+    void testFlipCardSuccess() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+        memoramaGameService.initialize("ROOM11", 1L, List.of("Player1"));
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM11", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM11");
+        request.setCardPosition(5);
+
+        assertDoesNotThrow(() -> memoramaGameService.flipCard(request));
+        
+        // Verificar que la carta se volteó
+        assertTrue(capturedState.getCards().get(5).isFlipped());
+        // Verificar que se envió el mensaje actualizado (2 calls: initialize + flipCard)
+        verify(messagingTemplate, times(2)).convertAndSend(anyString(), any(MemoramaGameState.class));
     }
 }
