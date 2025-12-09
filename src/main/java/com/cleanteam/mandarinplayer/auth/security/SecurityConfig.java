@@ -50,11 +50,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/ws/**",            // permite handshake y transportes SockJS
+                                "/ws/**", // permite handshake y transportes SockJS
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/api/games/**",
+                                "/api/games/**",
                                 "/api/topics/**",
+                                "/api/themes/**",
                                 "/error",
                                 "/**/*.js",
                                 "/**/*.css",
@@ -66,15 +68,12 @@ public class SecurityConfig {
                                 "/**/*.json",
                                 "/**/*.txt",
                                 "/",
-                                "/**",
-                                "/actuator/**",
+                                "/",
                                 "/favicon.ico",
-                                "/**/*",
-                                "/**"
-                        ).permitAll()
+                                "/actuator/**")
+                        .permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
