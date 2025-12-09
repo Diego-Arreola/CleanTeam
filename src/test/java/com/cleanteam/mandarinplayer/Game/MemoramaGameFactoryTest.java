@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.cleanteam.mandarinplayer.Model.Match;
 import com.cleanteam.mandarinplayer.Model.Theme;
 import com.cleanteam.mandarinplayer.Service.MemoramaGameService;
+import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MemoramaGameFactory")
@@ -117,5 +118,19 @@ class MemoramaGameFactoryTest {
     void testCreateGameWithMatchHandling() {
         // El factory crea la instancia, no valida
         assertDoesNotThrow(() -> factory.createGame(testMatch));
+    }
+
+    @Test
+    @DisplayName("Debe delegaralfip al servicio")
+    void testGameOnFlip() {
+        Game game = factory.createGame(testMatch);
+        
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("TEST01");
+        request.setCardPosition(0);
+        
+        game.onFlip(request);
+        
+        verify(memoramaGameService, times(1)).flipCard(request);
     }
 }

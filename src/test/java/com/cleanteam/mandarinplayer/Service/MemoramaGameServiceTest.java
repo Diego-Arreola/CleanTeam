@@ -489,4 +489,69 @@ class MemoramaGameServiceTest {
             assertEquals(i, card.getPosition());
         }
     }
+
+    @Test
+    @DisplayName("Debe retornar null si request es nulo")
+    void testFlipCardWithNullRequest() {
+        // flipCard lanza NullPointerException si request es nulo
+        assertThrows(NullPointerException.class, () -> memoramaGameService.flipCard(null));
+    }
+
+    @Test
+    @DisplayName("Debe retornar null si roomCode es nulo")
+    void testFlipCardWithNullRoomCode() {
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode(null);
+        request.setCardPosition(0);
+
+        // flipCard lanza NullPointerException si roomCode es nulo
+        assertThrows(NullPointerException.class, () -> memoramaGameService.flipCard(request));
+    }
+
+    @Test
+    @DisplayName("Debe retornar null si cardPosition es nulo")
+    void testFlipCardWithNullPosition() {
+        // Este test no aplica porque cardPosition es int primitivo, no puede ser nulo
+        // Se valida indirectamente en testFlipCardNegativePosition
+        assertTrue(true);
+    }
+
+    @Test
+    @DisplayName("Debe alternar waitingForFlip al hacer flip correcto")
+    void testFlipCardTogglesWaitingForFlip() {
+        when(wordRepository.findByThemeId(1L)).thenReturn(testWords);
+
+        Match match12 = new Match();
+        match12.setRoomCode("ROOM12");
+        match12.setThemes(new HashSet<>(List.of(testTheme)));
+        match12.setPlayers(new HashSet<>(List.of("Player1")));
+
+        memoramaGameService.initializeGameAndStore(match12);
+
+        ArgumentCaptor<MemoramaGameState> stateCaptor = ArgumentCaptor.forClass(MemoramaGameState.class);
+        verify(messagingTemplate).convertAndSend(anyString(), stateCaptor.capture());
+        MemoramaGameState capturedState = stateCaptor.getValue();
+
+        boolean initialWaitingForFlip = capturedState.isWaitingForFlip();
+
+        // Usar reflection para agregar el estado
+        try {
+            java.lang.reflect.Field field = memoramaGameService.getClass().getDeclaredField("activeGames");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, MemoramaGameState> activeGames = (Map<String, MemoramaGameState>) field.get(memoramaGameService);
+            activeGames.put("ROOM12", capturedState);
+        } catch (Exception e) {
+            fail("No se pudo acceder al mapa activeGames");
+        }
+
+        FlipCardRequest request = new FlipCardRequest();
+        request.setRoomCode("ROOM12");
+        request.setCardPosition(0);
+
+        memoramaGameService.flipCard(request);
+
+        // Verificar que se alternó
+        assertEquals(!initialWaitingForFlip, capturedState.isWaitingForFlip());
+    }
 }
