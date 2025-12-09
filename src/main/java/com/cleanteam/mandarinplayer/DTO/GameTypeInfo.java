@@ -1,6 +1,7 @@
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
-import com.cleanteam.mandarinplayer.Game.GameType;
+import com.cleanteam.mandarinplayer.game.GameType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

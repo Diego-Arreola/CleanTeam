@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.Model;
+package com.cleanteam.mandarinplayer.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

@@ -13,10 +13,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Service.MemoramaGameService;
-import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest;
+import com.cleanteam.mandarinplayer.game.Game;
+import com.cleanteam.mandarinplayer.game.GameFactory;
+import com.cleanteam.mandarinplayer.game.GameType;
+import com.cleanteam.mandarinplayer.game.MemoramaGameFactory;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.model.Theme;
+import com.cleanteam.mandarinplayer.service.MemoramaGameService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MemoramaGameFactory")

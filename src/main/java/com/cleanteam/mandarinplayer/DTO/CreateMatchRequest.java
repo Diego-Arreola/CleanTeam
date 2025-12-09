@@ -1,7 +1,5 @@
 // java
-package com.cleanteam.mandarinplayer.DTO;
-
-import com.cleanteam.mandarinplayer.Game.GameType;
+package com.cleanteam.mandarinplayer.dto;
 
 import java.util.List;
 

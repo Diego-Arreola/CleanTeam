@@ -1,64 +1,43 @@
-package com.cleanteam.mandarinplayer.Controller;
+package com.cleanteam.mandarinplayer.controller; 
 
-import com.cleanteam.mandarinplayer.DTO.*;
-import com.cleanteam.mandarinplayer.Game.GameType;
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Repository.GameModeRepository;
-import com.cleanteam.mandarinplayer.Repository.MatchRepository;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
-import com.cleanteam.mandarinplayer.Service.MatchConfigurer;
-import com.cleanteam.mandarinplayer.Service.MatchService;
-import com.cleanteam.mandarinplayer.Service.MatchStateManager;
-import com.cleanteam.mandarinplayer.Service.ThemeService;
+import com.cleanteam.mandarinplayer.dto.CreateMatchRequest;
+import com.cleanteam.mandarinplayer.dto.StartMatchRequest;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.service.MatchService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/matches")
 public class MatchController {
 
-    private final ThemeRepository themeRepository;
-    private final GameModeRepository gameModeRepository;
-    private final MatchRepository matchRepository;
-    private final MatchConfigurer matchConfigurer;
-    private final MatchStateManager matchStateManager;
+    private final MatchService matchService;
 
-    public MatchController(ThemeRepository themeRepository,
-                           GameModeRepository gameModeRepository,
-                           MatchRepository matchRepository,
-                           MatchConfigurer matchConfigurer,
-                           MatchStateManager matchStateManager) {
-        this.themeRepository = themeRepository;
-        this.gameModeRepository = gameModeRepository;
-        this.matchRepository = matchRepository;
-        this.matchConfigurer = matchConfigurer;
-        this.matchStateManager = matchStateManager;
+    public MatchController(MatchService matchService) {
+        this.matchService = matchService;
     }
 
     @GetMapping("/themes")
-    public Object getThemes() {
-        return themeRepository.findAll();
+    public ResponseEntity<?> getThemes() {
+        return ResponseEntity.ok(matchService.getAllThemes());
     }
 
     @GetMapping("/gamemodes")
-    public Object getGameModes() {
-        return gameModeRepository.findAll();
+    public ResponseEntity<?> getGameModes() {
+        return ResponseEntity.ok(matchService.getAllGameModes());
     }
 
     @PostMapping("/create")
-    public Match createMatch(@RequestBody CreateMatchRequest request) {
-        Match match = matchConfigurer.configure(request);
-        return matchRepository.save(match);
+    public ResponseEntity<Match> createMatch(@RequestBody CreateMatchRequest request) {
+        return ResponseEntity.ok(matchService.createMatch(request));
     }
 
     @PostMapping("/matches/start")
-    public Match start(@RequestBody StartMatchRequest req) {
-        return matchStateManager.start(req);
+    public ResponseEntity<Match> start(@RequestBody StartMatchRequest req) {
+        return ResponseEntity.ok(matchService.startMatch(req));
+    }
+    @PostMapping("/{matchId}/play")
+    public ResponseEntity<Match> playTurn(@PathVariable Long matchId, @RequestBody com.cleanteam.mandarinplayer.dto.FlipCardRequest request) {
+        return ResponseEntity.ok(matchService.playTurn(matchId, request));
     }
 }

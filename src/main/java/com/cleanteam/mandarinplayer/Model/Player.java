@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.Model;
+package com.cleanteam.mandarinplayer.model;
 import com.cleanteam.mandarinplayer.auth.model.AuthUser;
 import jakarta.persistence.*;
 

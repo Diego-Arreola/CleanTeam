@@ -1,5 +1,5 @@
 // java
-package com.cleanteam.mandarinplayer.Model;
+package com.cleanteam.mandarinplayer.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,8 @@
-package com.cleanteam.mandarinplayer.Repository;
+package com.cleanteam.mandarinplayer.repository;
 
-import com.cleanteam.mandarinplayer.Model.GameMode;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.cleanteam.mandarinplayer.model.GameMode;
 
 public interface GameModeRepository extends JpaRepository<GameMode, Long> {
 }

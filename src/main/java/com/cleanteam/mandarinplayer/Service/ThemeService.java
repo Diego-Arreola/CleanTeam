@@ -1,13 +1,14 @@
-package com.cleanteam.mandarinplayer.Service;
+package com.cleanteam.mandarinplayer.service;
 
-import com.cleanteam.mandarinplayer.DTO.ThemeDTO;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.dto.ThemeDTO;
+import com.cleanteam.mandarinplayer.dto.WordDTO;
+import com.cleanteam.mandarinplayer.model.Theme;
+import com.cleanteam.mandarinplayer.model.Word;
+import com.cleanteam.mandarinplayer.repository.ThemeRepository;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.cleanteam.mandarinplayer.DTO.WordDTO;
-import com.cleanteam.mandarinplayer.Model.Word;
 
 @Service
 public class ThemeService {
@@ -54,7 +55,7 @@ public class ThemeService {
         if (theme.getWords() != null) {
             dto.setVocabulary(theme.getWords().stream()
                     .map(word -> {
-                        com.cleanteam.mandarinplayer.DTO.WordDTO wordDTO = new com.cleanteam.mandarinplayer.DTO.WordDTO();
+                        com.cleanteam.mandarinplayer.dto.WordDTO wordDTO = new com.cleanteam.mandarinplayer.dto.WordDTO();
                         wordDTO.setId(word.getId());
                         wordDTO.setCharacter(word.getCharacter());
                         wordDTO.setPinyin(word.getPinyin());

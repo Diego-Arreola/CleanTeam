@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
 public class MatchResponse {
     private Long id;

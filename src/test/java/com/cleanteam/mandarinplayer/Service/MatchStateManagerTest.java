@@ -16,16 +16,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
-import com.cleanteam.mandarinplayer.DTO.LobbyEvent;
-import com.cleanteam.mandarinplayer.DTO.StartMatchRequest;
-import com.cleanteam.mandarinplayer.Game.Game;
-import com.cleanteam.mandarinplayer.Game.GameFactory;
-import com.cleanteam.mandarinplayer.Game.GameFactoryRegistry;
-import com.cleanteam.mandarinplayer.Game.GameType;
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.MatchStatus;
-import com.cleanteam.mandarinplayer.Repository.MatchRepository;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest;
+import com.cleanteam.mandarinplayer.dto.LobbyEvent;
+import com.cleanteam.mandarinplayer.dto.StartMatchRequest;
+import com.cleanteam.mandarinplayer.game.Game;
+import com.cleanteam.mandarinplayer.game.GameFactory;
+import com.cleanteam.mandarinplayer.game.GameFactoryRegistry;
+import com.cleanteam.mandarinplayer.game.GameType;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.model.MatchStatus;
+import com.cleanteam.mandarinplayer.repository.MatchRepository;
+import com.cleanteam.mandarinplayer.service.MatchStateManager;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MatchStateManager")

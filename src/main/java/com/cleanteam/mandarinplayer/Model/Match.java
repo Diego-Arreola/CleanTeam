@@ -1,8 +1,8 @@
 // java
-package com.cleanteam.mandarinplayer.Model;
+package com.cleanteam.mandarinplayer.model;
 
-import com.cleanteam.mandarinplayer.Game.Game;
-import com.cleanteam.mandarinplayer.Game.GameType;
+import com.cleanteam.mandarinplayer.game.Game;
+import com.cleanteam.mandarinplayer.game.GameType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

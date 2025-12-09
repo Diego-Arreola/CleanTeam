@@ -1,5 +1,5 @@
 // Java
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,13 +1,14 @@
 // java
-package com.cleanteam.mandarinplayer.WebSocket;
+package com.cleanteam.mandarinplayer.websocket;
 
-import com.cleanteam.mandarinplayer.Service.MatchStateManager;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
+import com.cleanteam.mandarinplayer.service.MatchStateManager;
 
 @Component
 public class WebSocketEventsListener {

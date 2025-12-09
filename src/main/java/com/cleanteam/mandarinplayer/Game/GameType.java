@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.Game;
+package com.cleanteam.mandarinplayer.game;
 
 public enum GameType {
     MEMORAMA,

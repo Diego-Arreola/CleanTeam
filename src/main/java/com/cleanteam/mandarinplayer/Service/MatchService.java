@@ -1,59 +1,99 @@
-package com.cleanteam.mandarinplayer.Service;
+package com.cleanteam.mandarinplayer.service;
 
-import com.cleanteam.mandarinplayer.Game.GameType;
-import com.cleanteam.mandarinplayer.auth.repository.AuthUserRepository;
-import com.cleanteam.mandarinplayer.DTO.CreateMatchRequest;
-import com.cleanteam.mandarinplayer.Model.*;
-import com.cleanteam.mandarinplayer.Repository.*;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.dto.CreateMatchRequest;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest; 
+import com.cleanteam.mandarinplayer.dto.StartMatchRequest;
+import com.cleanteam.mandarinplayer.game.GameStrategy;   
+import com.cleanteam.mandarinplayer.game.GameType;       
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.repository.GameModeRepository;
+import com.cleanteam.mandarinplayer.repository.MatchRepository;
+import com.cleanteam.mandarinplayer.repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.model.MatchStatus;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
 
     private final MatchRepository matchRepository;
     private final ThemeRepository themeRepository;
+    private final GameModeRepository gameModeRepository;
+    private final MatchConfigurer matchConfigurer;
+    private final MatchStateManager matchStateManager;
+    
+    //STRATEGY: Un mapa inteligente de juegos
+    private final Map<GameType, GameStrategy> strategies;
 
     public MatchService(MatchRepository matchRepository,
-                        ThemeRepository themeRepository
-                       ) {
+                        ThemeRepository themeRepository,
+                        GameModeRepository gameModeRepository,
+                        MatchConfigurer matchConfigurer,
+                        MatchStateManager matchStateManager,
+                        List<GameStrategy> strategyList) { 
+        
         this.matchRepository = matchRepository;
         this.themeRepository = themeRepository;
+        this.gameModeRepository = gameModeRepository;
+        this.matchConfigurer = matchConfigurer;
+        this.matchStateManager = matchStateManager;
+
+        // Convertimos la lista en un Mapa para buscar rápido
+        this.strategies = strategyList.stream()
+                .collect(Collectors.toMap(GameStrategy::getGameType, Function.identity()));
     }
 
     public Match createMatch(CreateMatchRequest request) {
-        Match match = new Match();
-        match.setRoomCode(generateRoomCode());
-        match.setStatus(MatchStatus.CONFIGURING);
-        match.setCreatedAt(LocalDateTime.now());
-
-        // Asignar GameType enum desde el request
-        if (request.getGameType() != null) {
-
-            match.setGameType(GameType.valueOf(request.getGameType().toUpperCase()));
-
-        }
-
-        if (request.getThemeIds() != null) {
-            match.setThemes(new HashSet<>(themeRepository.findAllById(request.getThemeIds())));
-        }
-
-        return matchRepository.save(match);
+         Match match = matchConfigurer.configure(request);
+         return matchRepository.save(match);
     }
 
-    public Match startMatch(Long matchId) {
-        Match match = matchRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found"));
+    @Transactional
+    public Match startMatch(StartMatchRequest request) {
+        // Lógica movida desde el StateManager viejo al Servicio
+        Match match = matchRepository.findByRoomCode(request.getRoomCode())
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+
+        if (match.getPlayers().isEmpty()) {
+            throw new IllegalStateException("Se necesita al menos un jugador");
+        }
+
         match.setStatus(MatchStatus.IN_PROGRESS);
+        Match savedMatch = matchRepository.save(match);
+        
+        // Avisar al lobby que el juego empezó (Usando el StateManager solo para notificar)
+        matchStateManager.publishLobbyUpdate(savedMatch);
+
+        return savedMatch;
+    }
+
+    public List<?> getAllThemes() { return themeRepository.findAll(); }
+    public List<?> getAllGameModes() { return gameModeRepository.findAll(); }
+
+
+    // --- NUEVO MÉTODO PARA JUGAR ---
+    @Transactional
+    public Match playTurn(Long matchId, FlipCardRequest request) {
+        // 1. Buscamos la partida
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Partida no encontrada"));
+
+        // 2. Buscamos la estrategia correcta (Memorama, Word, etc.)
+        GameStrategy strategy = strategies.get(match.getGameType());
+
+        if (strategy == null) {
+            throw new RuntimeException("No hay lógica implementada para el juego: " + match.getGameType());
+        }
+
+        // 3. Ejecutamos el turno (Polimorfismo puro)
+        strategy.playTurn(match, request);
+
+        // 4. Guardamos los cambios
         return matchRepository.save(match);
     }
-
-    private String generateRoomCode() {
-        return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-    }
-
 }
-

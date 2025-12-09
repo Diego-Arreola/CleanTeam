@@ -1,45 +1,61 @@
-package com.cleanteam.mandarinplayer.WebSocket;
+package com.cleanteam.mandarinplayer.websocket;
 
-import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
-import com.cleanteam.mandarinplayer.DTO.GameStateResponse;
-import com.cleanteam.mandarinplayer.Service.MatchStateManager;
-import com.cleanteam.mandarinplayer.Service.MemoramaGameService;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.repository.MatchRepository; 
+import com.cleanteam.mandarinplayer.service.MatchService;       
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal; 
 
 @Controller
 public class GameWsController {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final MatchStateManager matchStateManager;
+    private final MatchService matchService;          
+    private final MatchRepository matchRepository;    
 
-    public GameWsController(MatchStateManager matchStateManager,
-                            SimpMessagingTemplate messagingTemplate) {
+    public GameWsController(SimpMessagingTemplate messagingTemplate,
+                            MatchService matchService,
+                            MatchRepository matchRepository) {
         this.messagingTemplate = messagingTemplate;
-        this.matchStateManager = matchStateManager;
+        this.matchService = matchService;
+        this.matchRepository = matchRepository;
     }
 
     @MessageMapping("/matches/flip")
     public void flip(@Payload FlipCardRequest req, StompHeaderAccessor accessor) {
+        // Validaciones básicas
         if (req == null || req.getRoomCode() == null) {
             return;
         }
+        
         String sessionId = accessor != null ? accessor.getSessionId() : null;
         if (sessionId == null) {
             return;
         }
 
         try {
-            // Delegar en MatchStateManager; éste publica /topic/matches/{room}/game y el lobby.
-            matchStateManager.flip(req, accessor);
+            // 1. Buscamos la partida usando el roomCode que viene del frontend
+            Match match = matchRepository.findByRoomCode(req.getRoomCode())
+                    .orElseThrow(() -> new RuntimeException("Partida no encontrada: " + req.getRoomCode()));
+
+            // El servicio usará automáticamente la Estrategia correcta (Memorama, etc.)
+            matchService.playTurn(match.getId(), req);
+
         } catch (Exception e) {
-            String principal = accessor != null && accessor.getUser() != null ? accessor.getUser().getName() : null;
-            if (principal != null) {
-                messagingTemplate.convertAndSendToUser(principal, "/queue/errors", e.getMessage());
+            // Manejo de errores (enviar mensaje privado al usuario)
+            Principal user = accessor != null ? accessor.getUser() : null;
+            if (user != null) {
+                String principalName = user.getName();
+                if (principalName != null) {
+                    messagingTemplate.convertAndSendToUser(principalName, "/queue/errors", e.getMessage());
+                }
             }
         }
     }

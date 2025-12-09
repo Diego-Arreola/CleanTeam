@@ -15,10 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.cleanteam.mandarinplayer.DTO.ThemeDTO;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Model.Word;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.dto.ThemeDTO;
+import com.cleanteam.mandarinplayer.model.Theme;
+import com.cleanteam.mandarinplayer.model.Word;
+import com.cleanteam.mandarinplayer.repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.service.ThemeService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para ThemeService")

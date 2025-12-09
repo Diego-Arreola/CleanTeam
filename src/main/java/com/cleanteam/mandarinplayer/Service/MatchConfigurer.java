@@ -1,11 +1,12 @@
 // java
-package com.cleanteam.mandarinplayer.Service;
+package com.cleanteam.mandarinplayer.service;
 
-import com.cleanteam.mandarinplayer.DTO.CreateMatchRequest;
-import com.cleanteam.mandarinplayer.Game.GameType;
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.MatchStatus;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.dto.CreateMatchRequest;
+import com.cleanteam.mandarinplayer.game.GameType;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.model.MatchStatus;
+import com.cleanteam.mandarinplayer.repository.ThemeRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

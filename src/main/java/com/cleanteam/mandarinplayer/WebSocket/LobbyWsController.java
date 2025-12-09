@@ -1,8 +1,9 @@
 // java
-package com.cleanteam.mandarinplayer.WebSocket;
+package com.cleanteam.mandarinplayer.websocket;
 
-import com.cleanteam.mandarinplayer.DTO.JoinMatchRequest;
-import com.cleanteam.mandarinplayer.Service.MatchStateManager;
+import com.cleanteam.mandarinplayer.dto.JoinMatchRequest;
+import com.cleanteam.mandarinplayer.service.MatchStateManager;
+
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;

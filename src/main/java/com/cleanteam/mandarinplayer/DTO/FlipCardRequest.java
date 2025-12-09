@@ -1,5 +1,5 @@
 // java
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
 public class FlipCardRequest {
     private String roomCode;

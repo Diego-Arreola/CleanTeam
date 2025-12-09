@@ -14,12 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.cleanteam.mandarinplayer.DTO.CreateMatchRequest;
-import com.cleanteam.mandarinplayer.Game.GameType;
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.MatchStatus;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.dto.CreateMatchRequest;
+import com.cleanteam.mandarinplayer.game.GameType;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.model.MatchStatus;
+import com.cleanteam.mandarinplayer.model.Theme;
+import com.cleanteam.mandarinplayer.repository.ThemeRepository;
+import com.cleanteam.mandarinplayer.service.MatchConfigurer;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MatchConfigurer")

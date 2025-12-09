@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
 import lombok.Data;
 

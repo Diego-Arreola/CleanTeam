@@ -1,4 +1,4 @@
-package com.cleanteam.mandarinplayer.Model;
+package com.cleanteam.mandarinplayer.model;
 
 public class PlayerSession {
     private final String sessionId;

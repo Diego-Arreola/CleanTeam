@@ -1,6 +1,6 @@
-package com.cleanteam.mandarinplayer.Game;
+package com.cleanteam.mandarinplayer.game;
 
-import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest;
 
 public interface Game {
     void start(); // inicializa rondas, carga palabras del/los temas, etc.

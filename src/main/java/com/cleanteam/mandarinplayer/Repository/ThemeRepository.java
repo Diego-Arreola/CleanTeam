@@ -1,8 +1,9 @@
-package com.cleanteam.mandarinplayer.Repository;
+package com.cleanteam.mandarinplayer.repository;
 
-import com.cleanteam.mandarinplayer.Model.Theme;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.cleanteam.mandarinplayer.model.Theme;
 
 import java.util.Optional;
 

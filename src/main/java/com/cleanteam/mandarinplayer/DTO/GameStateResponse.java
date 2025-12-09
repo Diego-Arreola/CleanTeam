@@ -1,9 +1,10 @@
 // java
-package com.cleanteam.mandarinplayer.DTO;
+package com.cleanteam.mandarinplayer.dto;
 
-import com.cleanteam.mandarinplayer.Model.MemoramaCard;
 import java.util.List;
 import java.util.Map;
+
+import com.cleanteam.mandarinplayer.model.MemoramaCard;
 
 public class GameStateResponse {
     private String type;

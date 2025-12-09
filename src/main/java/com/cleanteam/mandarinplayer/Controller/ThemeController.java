@@ -1,12 +1,20 @@
-package com.cleanteam.mandarinplayer.Controller;
+package com.cleanteam.mandarinplayer.controller;
 
-import com.cleanteam.mandarinplayer.DTO.ThemeDTO;
-import com.cleanteam.mandarinplayer.DTO.WordDTO;
-import com.cleanteam.mandarinplayer.Service.ThemeService;
-import com.cleanteam.mandarinplayer.Service.WordService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cleanteam.mandarinplayer.dto.ThemeDTO;
+import com.cleanteam.mandarinplayer.dto.WordDTO;
+import com.cleanteam.mandarinplayer.service.ThemeService;
+import com.cleanteam.mandarinplayer.service.WordService;
 
 @RestController
 @RequestMapping("/api/themes")

@@ -19,14 +19,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.cleanteam.mandarinplayer.DTO.FlipCardRequest;
-import com.cleanteam.mandarinplayer.Model.Match;
-import com.cleanteam.mandarinplayer.Model.MemoramaCard;
-import com.cleanteam.mandarinplayer.Model.MemoramaGameState;
-import com.cleanteam.mandarinplayer.Model.Theme;
-import com.cleanteam.mandarinplayer.Model.Word;
-import com.cleanteam.mandarinplayer.Repository.MatchRepository;
-import com.cleanteam.mandarinplayer.Repository.WordRepository;
+import com.cleanteam.mandarinplayer.dto.FlipCardRequest;
+import com.cleanteam.mandarinplayer.model.Match;
+import com.cleanteam.mandarinplayer.model.MemoramaCard;
+import com.cleanteam.mandarinplayer.model.MemoramaGameState;
+import com.cleanteam.mandarinplayer.model.Theme;
+import com.cleanteam.mandarinplayer.model.Word;
+import com.cleanteam.mandarinplayer.repository.MatchRepository;
+import com.cleanteam.mandarinplayer.repository.WordRepository;
+import com.cleanteam.mandarinplayer.service.MemoramaGameService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas para MemoramaGameService")

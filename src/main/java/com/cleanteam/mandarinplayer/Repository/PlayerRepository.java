@@ -1,7 +1,8 @@
-package com.cleanteam.mandarinplayer.Repository;
+package com.cleanteam.mandarinplayer.repository;
 
-import com.cleanteam.mandarinplayer.Model.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.cleanteam.mandarinplayer.model.Player;
 
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 }
