@@ -1,5 +1,9 @@
 # CleanTeam
 
+## Para ejecutar 
+
+docker compose up
+
 ## Equipo
 
 Becky Zhu Wu
