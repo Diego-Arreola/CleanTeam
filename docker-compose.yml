@@ -2,8 +2,12 @@ version: '3.9'
 
 services:
   java_app:
-    container_name: java_app
-    image: pee-java-app:1.0.0
+    container_name: mandarinplayer
+    # Opción 1: Usar imagen local construida con 'docker build'
+    image: mandarinplayer:latest
+    # Opción 2: Usar imagen de Docker Hub (descomenta y comenta la de arriba)
+    # image: diegoarerola/mandarinplayer:latest
+    # Opción 3: Construir localmente cada vez
     build: .
     ports:
       - "8080:8080"
@@ -11,15 +15,24 @@ services:
       - DATABASE_URL=jdbc:postgresql://java_db:5432/postgres
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       - java_db
+    restart: unless-stopped
 
   java_db:
-    container_name: java_db
-    image: postgres:12
+    container_name: mandarinplayer_db
+    image: postgres:15-alpine
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
