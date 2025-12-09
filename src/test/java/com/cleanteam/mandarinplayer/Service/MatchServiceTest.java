@@ -174,4 +174,18 @@ class MatchServiceTest {
         assertNotNull(result.getThemes());
         assertEquals(2, result.getThemes().size());
     }
+
+    @Test
+    @DisplayName("Debe crear partida sin tipo de juego")
+    void testCreateMatchWithoutGameType() {
+        createMatchRequest.setGameType(null);
+        when(themeRepository.findAllById(any())).thenReturn(java.util.List.of(testTheme));
+        when(matchRepository.save(any(Match.class))).thenReturn(testMatch);
+
+        Match result = matchService.createMatch(createMatchRequest);
+
+        assertNotNull(result);
+        assertEquals(MatchStatus.CONFIGURING, result.getStatus());
+        verify(matchRepository, times(1)).save(any(Match.class));
+    }
 }
