@@ -1,6 +1,7 @@
 package com.cleanteam.mandarinplayer.Game;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.util.HashSet;
@@ -57,7 +58,7 @@ class MemoramaGameFactoryTest {
         Game game = factory.createGame(testMatch);
         game.start();
 
-        verify(memoramaGameService, times(1)).initializeGame(testMatch);
+        verify(memoramaGameService, times(1)).initializeGameAndStore(testMatch);
     }
 
     @Test
@@ -69,7 +70,7 @@ class MemoramaGameFactoryTest {
         assertNotNull(game);
         game.start();
         
-        verify(memoramaGameService).initializeGame(testMatch);
+        verify(memoramaGameService).initializeGameAndStore(testMatch);
     }
 
     @Test
@@ -99,7 +100,7 @@ class MemoramaGameFactoryTest {
         Game game = factory.createGame(testMatch);
         game.start();
 
-        verify(memoramaGameService, times(1)).initializeGame(argThat(match -> 
+        verify(memoramaGameService, times(1)).initializeGameAndStore(argThat(match -> 
             match.getRoomCode().equals("TEST01") && 
             match.getGameType() == GameType.MEMORAMA
         ));
