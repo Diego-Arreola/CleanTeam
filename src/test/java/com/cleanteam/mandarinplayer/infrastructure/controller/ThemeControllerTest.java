@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import com.cleanteam.mandarinplayer.domain.usecases.ThemeUseCase;
 import com.cleanteam.mandarinplayer.domain.usecases.WordUseCase;
 import com.cleanteam.mandarinplayer.infrastructure.dto.ThemeDTO;
+import com.cleanteam.mandarinplayer.infrastructure.dto.WordDTO;
 
 import java.util.List;
 
@@ -98,6 +99,51 @@ class ThemeControllerTest {
         
         assertNotNull(response);
         assertTrue(response.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    @DisplayName("Debe obtener palabras por tema")
+    void testGetWordsByTheme() {
+        WordDTO word = new WordDTO();
+        word.setId(1L);
+        word.setCharacter("红");
+        word.setPinyin("hóng");
+        word.setTranslation("Rojo");
+        word.setThemeId(1L);
+        
+        when(wordUseCase.getWordsByTheme(1L)).thenReturn(List.of(word));
+        
+        ResponseEntity<List<WordDTO>> response = themeController.getWordsByTheme(1L);
+        
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("红", response.getBody().get(0).getCharacter());
+    }
+
+    @Test
+    @DisplayName("Debe agregar una palabra a un tema")
+    void testAddVocabulary() {
+        WordDTO inputWord = new WordDTO();
+        inputWord.setCharacter("蓝");
+        inputWord.setPinyin("lán");
+        inputWord.setTranslation("Azul");
+        
+        WordDTO createdWord = new WordDTO();
+        createdWord.setId(2L);
+        createdWord.setCharacter("蓝");
+        createdWord.setPinyin("lán");
+        createdWord.setTranslation("Azul");
+        createdWord.setThemeId(1L);
+        
+        when(wordUseCase.createWord(inputWord)).thenReturn(createdWord);
+        
+        ResponseEntity<WordDTO> response = themeController.addVocabulary(1L, inputWord);
+        
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getThemeId());
+        assertEquals("蓝", response.getBody().getCharacter());
     }
 }
 
