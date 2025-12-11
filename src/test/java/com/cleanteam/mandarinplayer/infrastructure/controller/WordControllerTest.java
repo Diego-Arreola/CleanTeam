@@ -1,7 +1,7 @@
 package com.cleanteam.mandarinplayer.infrastructure.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,10 +22,17 @@ class WordControllerTest {
     private WordUseCase wordUseCase;
 
     private WordController wordController;
+    private WordDTO testWordDTO;
 
     @BeforeEach
     void setUp() {
         wordController = new WordController(wordUseCase);
+        
+        testWordDTO = new WordDTO();
+        testWordDTO.setId(1L);
+        testWordDTO.setCharacter("大");
+        testWordDTO.setPinyin("dà");
+        testWordDTO.setTranslation("big");
     }
 
     @Test
@@ -35,29 +42,66 @@ class WordControllerTest {
     }
 
     @Test
-    @DisplayName("Debe crear una palabra")
+    @DisplayName("Debe crear una palabra exitosamente")
     void testCreateWord() {
-        WordDTO wordDTO = new WordDTO();
-        wordDTO.setCharacter("大");
-        wordDTO.setPinyin("dà");
-        wordDTO.setTranslation("big");
+        when(wordUseCase.createWord(testWordDTO)).thenReturn(testWordDTO);
         
-        when(wordUseCase.createWord(wordDTO)).thenReturn(wordDTO);
-        
-        ResponseEntity<WordDTO> response = wordController.createWord(wordDTO);
+        ResponseEntity<WordDTO> response = wordController.createWord(testWordDTO);
         
         assertNotNull(response);
         assertTrue(response.getStatusCode().is2xxSuccessful());
         assertNotNull(response.getBody());
         assertEquals("大", response.getBody().getCharacter());
+        assertEquals("dà", response.getBody().getPinyin());
+        assertEquals("big", response.getBody().getTranslation());
     }
 
     @Test
-    @DisplayName("Debe eliminar una palabra")
+    @DisplayName("Debe eliminar una palabra exitosamente")
     void testDeleteWord() {
+        doNothing().when(wordUseCase).deleteWord(1L);
+        
         ResponseEntity<Void> response = wordController.deleteWord(1L);
         
         assertNotNull(response);
         assertTrue(response.getStatusCode().is2xxSuccessful());
+        verify(wordUseCase, times(1)).deleteWord(1L);
+    }
+
+    @Test
+    @DisplayName("Debe retornar 204 No Content al eliminar")
+    void testDeleteWordReturnsNoContent() {
+        doNothing().when(wordUseCase).deleteWord(2L);
+        
+        ResponseEntity<Void> response = wordController.deleteWord(2L);
+        
+        assertEquals(204, response.getStatusCode().value());
+    }
+
+    @Test
+    @DisplayName("Debe crear palabra con datos completos")
+    void testCreateWordCompleteData() {
+        WordDTO completeWord = new WordDTO();
+        completeWord.setId(2L);
+        completeWord.setCharacter("小");
+        completeWord.setPinyin("xiǎo");
+        completeWord.setTranslation("small");
+        
+        when(wordUseCase.createWord(completeWord)).thenReturn(completeWord);
+        
+        ResponseEntity<WordDTO> response = wordController.createWord(completeWord);
+        
+        assertNotNull(response.getBody());
+        assertEquals("小", response.getBody().getCharacter());
+    }
+
+    @Test
+    @DisplayName("Debe verificar que WordUseCase es llamado al crear")
+    void testCreateWordCallsUseCase() {
+        when(wordUseCase.createWord(testWordDTO)).thenReturn(testWordDTO);
+        
+        wordController.createWord(testWordDTO);
+        
+        verify(wordUseCase, times(1)).createWord(testWordDTO);
     }
 }
